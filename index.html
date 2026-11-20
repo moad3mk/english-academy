@@ -224,13 +224,13 @@ function openStats(){document.getElementById('statsPanel').style.display='block'
 function closeStats(){document.getElementById('statsPanel').style.display='none';}
 function renderStats(){
  const left=Math.max(0,TOTAL-done.length),dates=JSON.parse(localStorage.getItem('ep_done_dates_v1')||'{}');
- const stamps=Object.values(dates).map(v=>new Date(v)).filter(d=>!isNaN(d.getTime())).sort((a,b)=>a-b);
+ const stamps=Object.values(dates).map(v=>new Date(v)).filter(d=>!isNaN(d.getTime())).sort((a,b)=>a-b),activeDays=[...new Set(stamps.map(d=>d.toISOString().slice(0,10)))];
  document.getElementById('statDone').textContent=done.length;
  document.getElementById('statLeft').textContent=left;
  const rateEl=document.getElementById('statRate'),timeEl=document.getElementById('statTime'),ex=document.getElementById('statsExplanation'),since=document.getElementById('statsSince');
  if(left===0){rateEl.textContent='100%';timeEl.textContent='اكتمل 🎉';ex.textContent='اجتزت كل دروس المنهج المسجلة. مبروك!';since.textContent='';return;}
- if(stamps.length<2){rateEl.textContent='نجمع البيانات';timeEl.textContent='لسه بدري';ex.textContent=stamps.length===0?'التقدير الزمني يبدأ بعد اجتياز درسين من الآن. إنجازاتك القديمة محفوظة، لكن الموقع ما عنده تواريخها، لذلك مش حنخمن سرعتك.':'سجلنا أول إنجاز بتاريخ '+stamps[0].toLocaleDateString('ar-LY')+'. اجتز درسًا آخر في يوم مختلف حتى نحسب معدلًا واقعيًا.';since.textContent='المدة المتبقية مش محسوبة بعد؛ نحتاج أكثر من نقطة زمنية.';return;}
- const first=stamps[0],last=stamps[stamps.length-1],elapsed=Math.max(1,(last-first)/86400000),rate=stamps.length/elapsed,weekly=rate*7,days=Math.ceil(left/rate);
+ if(activeDays.length<2){rateEl.textContent='نجمع البيانات';timeEl.textContent='لسه بدري';ex.textContent=stamps.length===0?'التقدير الزمني يبدأ بعد اجتياز درسين من الآن. إنجازاتك القديمة محفوظة، لكن الموقع ما عنده تواريخها، لذلك مش حنخمن سرعتك.':'سجلنا إنجازاتك بتاريخ '+stamps[0].toLocaleDateString('ar-LY')+'. نحتاج إنجازًا في يوم آخر حتى نحسب معدلًا واقعيًا.';since.textContent='المدة المتبقية مش محسوبة بعد؛ نحتاج أكثر من نقطة زمنية.';return;}
+ const first=stamps[0],last=stamps[stamps.length-1],elapsed=Math.max(1,Math.ceil((new Date(activeDays[activeDays.length-1]+'T00:00:00')-new Date(activeDays[0]+'T00:00:00'))/86400000)+1),rate=stamps.length/elapsed,weekly=rate*7,days=Math.ceil(left/rate);
  rateEl.textContent=weekly.toFixed(1)+' / أسبوع';
  timeEl.textContent=days<30?days+' يوم':Math.ceil(days/30)+' شهر';
  ex.textContent='حسب '+stamps.length+' دروس اجتزتها بتواريخ مسجلة خلال '+Math.ceil(elapsed)+' يوم. إذا واصلت بنفس المعدل، التقدير حوالي '+(days<30?days+' يوم':Math.ceil(days/30)+' شهر')+' لإكمال الدروس المتبقية.';
