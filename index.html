@@ -42,6 +42,35 @@ header{padding:15px 0 24px}.topbar{gap:8px}.logo{font-size:20px}.toplinks{displa
 main{padding:14px 0 40px}.dashboard{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.metric{padding:11px;border-radius:13px}.metric strong{font-size:21px}.app{display:flex;flex-direction:column;gap:12px;margin-top:14px}.sidebar{position:static;order:0;width:100%}.sidebox{padding:10px;margin-bottom:8px;border-radius:14px}.sidehead{margin-bottom:7px}.nav{display:flex;overflow-x:auto;gap:6px;padding-bottom:4px;scrollbar-width:thin}.nav button{white-space:nowrap;flex:0 0 auto;padding:9px 11px;background:#f5f7fb;font-size:13px}.nav .ico{width:auto;margin-left:4px}.sidebar .sidebox:nth-child(2){display:none}.content{width:100%;min-width:0}.sectionhead{align-items:flex-start;flex-direction:column;gap:8px}.sectionhead h2{font-size:22px}.search{width:100%;min-width:0}.coursegrid{grid-template-columns:1fr;gap:9px}.course{padding:14px;border-radius:14px}.course:hover{transform:none}.levelbanner{padding:13px}.lesson h2{font-size:23px}.lesson h3{font-size:17px}.lesson-box{padding:12px}.en{font-size:18px}table{display:block;overflow-x:auto;white-space:nowrap}.coach-panel{padding:12px}.coach-chat{min-height:150px;padding:10px;max-height:48vh;overflow-y:auto}.coach-bubble{max-width:96%;font-size:14px}.coach-controls{display:grid;grid-template-columns:1fr 1fr}.coach-input{min-height:48px;font-size:16px}.phrase{align-items:flex-start;padding:10px 2px}.coach-feedback{font-size:14px}footer{padding:18px 10px}
 @media(min-width:561px){body{background:#e9edf4}.shell{max-width:560px}.app{display:flex;flex-direction:column}.sidebar{position:static}.hero-art{display:none}}
  .stats-open-btn{background:linear-gradient(135deg,#3978f6,#2455b4);color:#fff;border:1px solid #1e4ea8;border-radius:12px;min-height:40px;padding:7px 16px;font-size:13px;font-weight:900;box-shadow:0 4px 12px #2455b433;letter-spacing:.1px}.stats-open-btn:active{transform:translateY(1px);box-shadow:0 2px 6px #2455b433}
+
+/* Compact mobile cards: less scrolling, more useful content per screen */
+.quick-tools-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0}
+.quick-tools-grid>.card{min-width:0;margin:0!important;padding:12px;border-radius:14px}
+.quick-tools-grid .sectionhead{display:flex;flex-direction:column;align-items:flex-start;gap:7px;margin-bottom:8px}
+.quick-tools-grid .sectionhead h2{font-size:16px!important;line-height:1.4}
+.quick-tools-grid .sectionhead .muted{font-size:11px!important;line-height:1.5}
+.quick-tools-grid .btn{min-height:36px;padding:7px 9px;font-size:12px}
+.quick-tools-grid #placementArea p{font-size:11px!important;line-height:1.55}
+.quick-tools-grid #listeningArea .btn{width:100%}
+@media(max-width:560px){
+ .coursegrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .course{padding:10px;border-radius:12px;min-width:0;min-height:132px}
+ .course .row{gap:4px;align-items:flex-start}
+ .course .num{font-size:11px;padding:2px 6px}
+ .course .tag{font-size:9px;padding:2px 5px;line-height:1.5}
+ .course h3{font-size:13px;line-height:1.45;margin:7px 0 3px;overflow-wrap:anywhere}
+ .course p{font-size:11px;line-height:1.45}
+ .coursefoot{font-size:10px;line-height:1.4;margin-top:8px;gap:3px}
+ .coursefoot span:first-child{display:none}
+ .quick-tools-grid{gap:7px}
+ .quick-tools-grid>.card{padding:10px}
+ .quick-tools-grid .sectionhead h2{font-size:14px!important}
+ .quick-tools-grid .sectionhead .muted{font-size:10px!important}
+ .quick-tools-grid .btn{font-size:11px;padding:6px 7px;min-height:34px}
+ .quick-tools-grid .tag{font-size:10px}
+}
+@media(max-width:350px){.quick-tools-grid{grid-template-columns:1fr}.course h3{font-size:12px}}
+
 </style></head>
 <body>
 <header><div class="shell">
@@ -89,6 +118,7 @@ main{padding:14px 0 40px}.dashboard{grid-template-columns:repeat(2,minmax(0,1fr)
   </div>
  </section>
 
+ <div class="quick-tools-grid">
  <section class="card" id="placementCard" style="margin:12px 0">
   <div class="sectionhead"><div><h2 style="font-size:20px;margin:0">🎯 اختبار تحديد المستوى</h2><div class="muted" style="font-size:12px">اختبار قصير يساعدك تعرف مستواك التقريبي.</div></div><button class="btn soft" onclick="startPlacement()">ابدأ الاختبار</button></div>
   <div id="placementArea"><p class="muted" style="margin:0;font-size:13px">جاوب على أسئلة متدرجة من السهل للأصعب. الاختبار لا يفتح دروسًا تلقائيًا؛ يعطيك توصية فقط حتى ما يضيعش ترتيب تعلمك.</p></div>
@@ -97,6 +127,7 @@ main{padding:14px 0 40px}.dashboard{grid-template-columns:repeat(2,minmax(0,1fr)
   <div class="sectionhead"><div><h2 style="font-size:20px;margin:0">🎧 تحدي الاستماع والإملاء</h2><div class="muted" style="font-size:12px">اسمع جملة قصيرة واكتب اللي سمعته.</div></div><span class="tag">تدريب مجاني</span></div>
   <div id="listeningArea"><button class="btn blue" onclick="newListening()">ابدأ تمرين الاستماع</button></div>
  </section>
+ </div>
  <section class="daily-review" aria-live="polite"><div><h3>🔄 مراجعة اليوم</h3><p id="reviewMeta">راجع درسًا سبق وتعلمته، وكل يوم نختار لك درسًا مختلفًا.</p></div><button class="btn blue" id="dailyReviewBtn" onclick="startDailyReview()">ابدأ مراجعة اليوم</button></section>
  <div class="app">
   <aside class="sidebar">
