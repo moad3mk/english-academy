@@ -302,7 +302,7 @@ conversation:{title:'مواقف الحياة الواقعية 🌍',desc:'تطب
 ]}
 
 };
-const ORDER=['path','grammar','vocab','speaking','listening','medical','a1','a2','b1','b2','c1','pronunciation','fluency','conversation'].filter(k=>C[k]);
+const ORDER=['path','a1','a2','grammar','vocab','speaking','listening','b1','b2','c1','pronunciation','fluency','conversation','medical'].filter(k=>C[k]);
 const SEQUENCE=ORDER.flatMap(sec=>C[sec].items.map((x,i)=>({sec,i,id:sec+':'+i})));
 const QUIZ_AR={
 'path:0':{q:'شن الحرف اللي يجي بعد B؟',a:['الحرف A','الحرف C','الحرف D']},
@@ -320,7 +320,7 @@ const QUIZ_AR={
 };
 const TOTAL=SEQUENCE.length;
 let done=JSON.parse(localStorage.getItem('ep_done_v2')||'[]');
-let unlocked=Math.max(0,Math.min(TOTAL,Number(localStorage.getItem('ep_unlocked_v2')||0)));
+let unlocked=SEQUENCE.findIndex(x=>!done.includes(x.id));if(unlocked<0)unlocked=TOTAL;localStorage.setItem('ep_unlocked_v2',String(unlocked));
 let active='path';
 let reviewMode=false;
 function seqIndex(sec,i){return SEQUENCE.findIndex(x=>x.sec===sec&&x.i===i)}
