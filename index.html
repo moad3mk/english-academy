@@ -71,10 +71,30 @@ main{padding:14px 0 40px}.dashboard{grid-template-columns:repeat(2,minmax(0,1fr)
 }
 @media(max-width:350px){.quick-tools-grid{grid-template-columns:1fr}.course h3{font-size:12px}}
 
+
+/* Accessible appearance and language controls */
+.top-actions{display:flex;gap:6px;align-items:center}
+.top-control{border:1px solid #ffffff55;background:#ffffff16;color:#fff;border-radius:10px;padding:7px 10px;min-width:40px;font-weight:800;font-size:12px}
+.top-control:active{transform:scale(.97)}
+body.dark-mode{--bg:#111827;--white:#1f2937;--ink:#e5e7eb;--muted:#aab5c5;--line:#374151;--pale:#243650;background:#111827;color:#e5e7eb}
+body.dark-mode .metric,body.dark-mode .card,body.dark-mode .sidebox,body.dark-mode .course,body.dark-mode .example,body.dark-mode .coach-chat,body.dark-mode .choice,body.dark-mode table,body.dark-mode .search,body.dark-mode .coach-input{background:#1f2937;color:#e5e7eb;border-color:#374151}
+body.dark-mode .course.locked{background:#182230}
+body.dark-mode .nav button{color:#d1d5db}
+body.dark-mode .nav button.active,body.dark-mode .nav button:hover{background:#263b59;color:#bcd3ff}
+body.dark-mode .lesson-box,body.dark-mode .coach-panel,body.dark-mode .levelbanner,body.dark-mode .daily-review{background:#1b2a40;border-color:#344a68;color:#e5e7eb}
+body.dark-mode .quizbox{background:#332d1e;border-color:#66552c;color:#f8edcf}
+body.dark-mode .choice{background:#202b3b;border-color:#4b5563}
+body.dark-mode th{background:#263449}
+body.dark-mode .btn.soft{background:#263b59;color:#c9dcff}
+body.dark-mode .progressline{background:#374151}
+body.dark-mode input,body.dark-mode select{color:#f3f4f6}
+body.dark-mode .coach-feedback{background:#202b3b;border-color:#374151}
+@media(max-width:560px){.topbar{align-items:center}.top-actions{margin-right:auto}.top-control{min-height:36px}.logo{font-size:18px}}
+
 </style></head>
 <body>
 <header><div class="shell">
- <div class="topbar"><div class="logo">✦ English <b>Path</b></div><nav class="toplinks"><a href="#learn">المسارات</a><a href="#method">طريقة التعلم</a><a href="#speaking">المحادثة</a></nav><span class="tag" style="background:#ffffff20;color:#fff">من A0 إلى C1 + الطلاقة</span></div>
+ <div class="topbar"><div class="logo">✦ English <b>Path</b></div><nav class="toplinks"><a href="#learn" data-ui="paths">المسارات</a><a href="#method" data-ui="method">طريقة التعلم</a><a href="#speaking" data-ui="conversation">المحادثة</a></nav><div class="top-actions"><button class="top-control" id="langToggle" onclick="toggleLanguage()">EN</button><button class="top-control" id="themeToggle" onclick="toggleTheme()" aria-label="تغيير المظهر">🌙</button></div><span class="tag" style="background:#ffffff20;color:#fff">من A0 إلى C1 + الطلاقة</span></div>
  <section class="hero"><div><div class="eyebrow">YOUR ENGLISH JOURNEY STARTS HERE</div><h1>من أول حرف…<br>إلى ما تحكي بثقة.</h1><p>منهج موسّع يبدأ من الصفر، ويمر بمستويات A1 وA2 وB1 وB2 وC1، ثم مختبرات النطق والطلاقة ومواقف الحياة الواقعية. كل درس فيه شرح وتطبيق واختبار، والتقدم بالترتيب.</p><div class="actions"><button class="btn gold" onclick="goSection('path')">ابدأ من الصفر ←</button><button class="btn outline" onclick="openCoach()">تدرّب على الكلام</button></div></div>
  <div class="hero-art"><div><div class="big">🌍📚</div><strong>Learn it. Use it. Speak it.</strong><small>افهم الإنجليزية واستعملها كل يوم</small></div></div></section>
 </div></header>
@@ -483,6 +503,28 @@ function coachReply(){
 
 function startVoiceInput(){let SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){document.getElementById('voiceStatus').textContent='المتصفح الحالي لا يدعم تحويل الكلام إلى نص. جرّب متصفحًا يدعم Speech Recognition أو اكتب إجابتك.';return;}let r=new SR();r.lang='en-US';r.interimResults=false;r.maxAlternatives=1;document.getElementById('voiceStatus').textContent='نسمع فيك… تكلم بالإنجليزية توا.';r.onresult=e=>{document.getElementById('coachAnswer').value=e.results[0][0].transcript;document.getElementById('voiceStatus').textContent='تم تحويل كلامك إلى نص. اضغط «راجع إجابتي».';};r.onerror=e=>{document.getElementById('voiceStatus').textContent='ما قدرناش نكملوا التسجيل ('+e.error+'). تأكد من إذن الميكروفون واتصال الإنترنت.';};try{r.start();}catch(e){document.getElementById('voiceStatus').textContent='التسجيل شغال بالفعل أو الميكروفون غير متاح.';}}
 progress();render();resetAiHistory();
+
+
+/* Theme and interface language preferences */
+function applyTheme(mode){
+ const dark=mode==='dark';document.body.classList.toggle('dark-mode',dark);
+ const b=document.getElementById('themeToggle');if(b){b.textContent=dark?'☀️':'🌙';b.title=dark?'الوضع النهاري':'الوضع الليلي';}
+ const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=dark?'#111827':'#101d34';
+}
+function toggleTheme(){const next=document.body.classList.contains('dark-mode')?'light':'dark';localStorage.setItem('ep_theme_v1',next);applyTheme(next);}
+const UI_TEXT={
+ ar:{paths:'المسارات',method:'طريقة التعلم',conversation:'المحادثة'},
+ en:{paths:'Learning paths',method:'How to learn',conversation:'Speaking'}
+};
+function applyLanguage(lang){
+ const en=lang==='en';document.documentElement.lang=en?'en':'ar';document.documentElement.dir=en?'ltr':'rtl';
+ document.querySelectorAll('[data-ui]').forEach(el=>{const k=el.dataset.ui;if(UI_TEXT[lang][k])el.textContent=UI_TEXT[lang][k];});
+ const b=document.getElementById('langToggle');if(b){b.textContent=en?'عربي':'EN';b.title=en?'Switch to Arabic':'التبديل للإنجليزية';}
+ localStorage.setItem('ep_ui_lang_v1',lang);
+}
+function toggleLanguage(){applyLanguage(localStorage.getItem('ep_ui_lang_v1')==='en'?'ar':'en');}
+applyTheme(localStorage.getItem('ep_theme_v1')||'light');
+applyLanguage(localStorage.getItem('ep_ui_lang_v1')||'ar');
 
 </script>
 </body></html>
