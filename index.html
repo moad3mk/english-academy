@@ -88,6 +88,15 @@ main{padding:14px 0 40px}.dashboard{grid-template-columns:repeat(2,minmax(0,1fr)
    <div id="mistakeList"></div>
   </div>
  </section>
+
+ <section class="card" id="placementCard" style="margin:12px 0">
+  <div class="sectionhead"><div><h2 style="font-size:20px;margin:0">🎯 اختبار تحديد المستوى</h2><div class="muted" style="font-size:12px">اختبار قصير يساعدك تعرف مستواك التقريبي.</div></div><button class="btn soft" onclick="startPlacement()">ابدأ الاختبار</button></div>
+  <div id="placementArea"><p class="muted" style="margin:0;font-size:13px">جاوب على أسئلة متدرجة من السهل للأصعب. الاختبار لا يفتح دروسًا تلقائيًا؛ يعطيك توصية فقط حتى ما يضيعش ترتيب تعلمك.</p></div>
+ </section>
+ <section class="card" id="listeningCard" style="margin:12px 0">
+  <div class="sectionhead"><div><h2 style="font-size:20px;margin:0">🎧 تحدي الاستماع والإملاء</h2><div class="muted" style="font-size:12px">اسمع جملة قصيرة واكتب اللي سمعته.</div></div><span class="tag">تدريب مجاني</span></div>
+  <div id="listeningArea"><button class="btn blue" onclick="newListening()">ابدأ تمرين الاستماع</button></div>
+ </section>
  <section class="daily-review" aria-live="polite"><div><h3>🔄 مراجعة اليوم</h3><p id="reviewMeta">راجع درسًا سبق وتعلمته، وكل يوم نختار لك درسًا مختلفًا.</p></div><button class="btn blue" id="dailyReviewBtn" onclick="startDailyReview()">ابدأ مراجعة اليوم</button></section>
  <div class="app">
   <aside class="sidebar">
@@ -352,6 +361,32 @@ let reviewMode=false;
 function seqIndex(sec,i){return SEQUENCE.findIndex(x=>x.sec===sec&&x.i===i)}
 function progress(){let p=Math.round(done.length/TOTAL*100);document.getElementById('completed').textContent=done.length;document.getElementById('streak').textContent=done.length*10;document.getElementById('percent').textContent=p+'%';document.getElementById('bar').style.width=p+'%';document.getElementById('sidebarbar').style.width=p+'%';document.getElementById('sideprogress').textContent=done.length+' من '+TOTAL+' درس مكتمل';document.getElementById('level').textContent=p<15?'A0':p<35?'A1':p<55?'A2':p<75?'B1':p<90?'B2':'C1';updateDailyReview();if(document.getElementById('statsPanel')&&document.getElementById('statsPanel').style.display!=='none')renderStats();}
 
+
+const placementQuestions=[
+{level:'A0',q:'شن معنى كلمة “book”؟',opts:['كتاب','ماء','باب'],a:0},
+{level:'A1',q:'اختار الجملة الصحيحة: أنا طالب.',opts:['I student.','I am a student.','I is student.'],a:1},
+{level:'A1',q:'شن معنى “yesterday”؟',opts:['غدًا','اليوم','أمس'],a:2},
+{level:'A2',q:'اختار الماضي الصحيح: “go”',opts:['goed','went','gone'],a:1},
+{level:'B1',q:'شن معنى “although”؟',opts:['على الرغم من','لأن','قبل أن'],a:0},
+{level:'B1',q:'اختار الجملة الصحيحة:',opts:['I have lived here for two years.','I am live here since two years.','I lived here since two years.'],a:0},
+{level:'B2',q:'شن أقرب معنى لـ “I would rather stay in”؟',opts:['نفضل نقعد في البيت','لازم نمشي توا','نسيت وين نسكن'],a:0},
+{level:'C1',q:'شن معنى “The proposal was feasible”؟',opts:['المقترح مستحيل','المقترح قابل للتنفيذ','المقترح اتلغى'],a:1}
+];
+let placementIndex=0,placementScore=0;
+function startPlacement(){placementIndex=0;placementScore=0;showPlacementQuestion();}
+function showPlacementQuestion(){let q=placementQuestions[placementIndex],area=document.getElementById('placementArea');area.innerHTML='<div class="muted" style="font-size:12px">السؤال '+(placementIndex+1)+' من '+placementQuestions.length+' — مستوى تقريبي: '+q.level+'</div><h3 style="font-size:17px">'+q.q+'</h3>'+q.opts.map((v,i)=>'<button class="choice" style="width:100%;text-align:right" onclick="answerPlacement('+i+')">'+escapeText(v)+'</button>').join('');}
+function answerPlacement(n){if(n===placementQuestions[placementIndex].a)placementScore++;placementIndex++;if(placementIndex<placementQuestions.length){showPlacementQuestion();return;}let pct=placementScore/placementQuestions.length,level=pct<.25?'A0':pct<.4?'A1':pct<.55?'A2':pct<.7?'B1':pct<.85?'B2':'C1';localStorage.setItem('ep_placement_v1',JSON.stringify({score:placementScore,total:placementQuestions.length,level,date:new Date().toISOString()}));document.getElementById('placementArea').innerHTML='<div class="lesson-box"><b>نتيجتك: '+placementScore+' من '+placementQuestions.length+'</b><h3>مستواك التقريبي: '+level+'</h3><p>هذه نتيجة استرشادية من اختبار قصير، مش شهادة رسمية. ننصحك تراجع دروس الأساسيات بالترتيب، والنتيجة ما تفتحش دروس مقفولة.</p><button class="btn blue" onclick="startPlacement()">عاود الاختبار</button></div>';}
+const listeningPrompts=[
+{en:'Good morning. How are you?',ar:'صباح الخير. كيف حالك؟'},
+{en:'I would like a glass of water, please.',ar:'نبي كاس ماء، لو سمحت.'},
+{en:'Where is the nearest bus stop?',ar:'وين أقرب موقف للحافلات؟'},
+{en:'She goes to work every day.',ar:'هي تمشي للخدمة كل يوم.'},
+{en:'We visited our friends last weekend.',ar:'زرنا أصحابنا في عطلة نهاية الأسبوع اللي فاتت.'},
+{en:'Could you speak more slowly, please?',ar:'ممكن تتكلم أبطأ، لو سمحت؟'}
+];
+let listeningCurrent=null;
+function newListening(){listeningCurrent=listeningPrompts[Math.floor(Math.random()*listeningPrompts.length)];document.getElementById('listeningArea').innerHTML='<p class="muted" style="font-size:13px">اضغط استمع، وبعدها اكتب الجملة اللي سمعتها بالإنجليزية.</p><button class="btn soft" onclick="speak(listeningCurrent.en)">🔊 اسمع الجملة</button><input id="listeningAnswer" class="search" style="width:100%;margin:10px 0" placeholder="اكتب الجملة اللي سمعتها"><button class="btn blue" onclick="checkListening()">تحقق من إجابتي</button><div id="listeningFeedback" class="feedback"></div>';}
+function checkListening(){let input=document.getElementById('listeningAnswer').value.trim(),norm=v=>v.toLowerCase().replace(/[^a-z0-9 ]/g,'').replace(/\\s+/g,' ').trim(),f=document.getElementById('listeningFeedback');if(!input){f.textContent='اكتب اللي سمعته الأول.';return;}if(norm(input)===norm(listeningCurrent.en)){f.style.color='#16845b';f.textContent='ممتاز! كتبت الجملة بشكل صحيح. معناها: '+listeningCurrent.ar;}else{f.style.color='#b42318';f.textContent='قريب! الجملة الصحيحة: '+listeningCurrent.en+' — معناها: '+listeningCurrent.ar+'. اسمعها مرة ثانية وحاول تكتبها.';}}
 function toggleStudyTool(id){let ids=['wordBook','mistakeBook'];ids.forEach(k=>document.getElementById(k).style.display=k===id?(document.getElementById(k).style.display==='none'?'block':'none'):'none');if(id==='wordBook')renderWordBook();if(id==='mistakeBook')renderMistakes();}
 function saveWord(){let w=document.getElementById('newWord').value.trim(),m=document.getElementById('newMeaning').value.trim();if(!w||!m){alert('اكتب الكلمة ومعناها الأول.');return;}let list=JSON.parse(localStorage.getItem('ep_word_book_v1')||'[]');if(list.some(x=>x.word.toLowerCase()===w.toLowerCase())){alert('الكلمة موجودة في دفترك من قبل.');return;}list.unshift({word:w,meaning:m});localStorage.setItem('ep_word_book_v1',JSON.stringify(list));document.getElementById('newWord').value='';document.getElementById('newMeaning').value='';renderWordBook();}
 function renderWordBook(){let list=JSON.parse(localStorage.getItem('ep_word_book_v1')||'[]'),el=document.getElementById('wordList');el.innerHTML=list.length?list.map((x,i)=>'<div class="example"><b dir="ltr">'+escapeText(x.word)+'</b> — '+escapeText(x.meaning)+' <button class="speak" onclick="speak('+JSON.stringify(x.word)+')">🔊</button> <button class="speak" onclick="deleteWord('+i+')">حذف</button></div>').join(''):'<p class="muted">دفترك فاضي. احفظ أول كلمة تتعلمها!</p>';}
